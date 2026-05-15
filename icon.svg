@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <rect width="512" height="512" rx="96" fill="#fdeff9"/>
+  <ellipse cx="256" cy="222" rx="118" ry="148" fill="#ff5aa5"/>
+  <ellipse cx="222" cy="160" rx="30" ry="48" fill="#ffffff" opacity="0.45"/>
+  <path d="M256 370 C250 392 238 410 224 426" fill="none" stroke="#7a2451" stroke-width="12" stroke-linecap="round"/>
+  <text x="256" y="255" font-size="96" text-anchor="middle" dominant-baseline="middle">🐶</text>
+</svg>

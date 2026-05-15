@@ -1,0 +1,16 @@
+{
+  "name": "Balon Patlatma Oyunu",
+  "short_name": "Balon Oyunu",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#fdeff9",
+  "theme_color": "#ff5aa5",
+  "description": "Balonların içindeki hayvanları patlatıp skor toplayabileceğin küçük HTML/CSS/JavaScript oyunu.",
+  "icons": [
+    {
+      "src": "./icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
