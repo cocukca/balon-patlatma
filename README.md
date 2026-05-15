@@ -4,5 +4,5 @@ Küçük, statik HTML/CSS/JavaScript balon patlatma oyunu. Balonların içindeki
 
 
 # Emeği Geçenler
-Arka plan müziğiŞ
+Arka plan müziği:
 ["Children's March Theme" - Cleyton Kauffman](https://opengameart.org/content/childrens-march-theme)
