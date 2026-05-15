@@ -4,6 +4,9 @@ const balloonContainer = document.getElementById("balloon-container");
 const scoreBoard = document.getElementById("score-board");
 const soundToggle = document.getElementById("sound-toggle");
 const resetButton = document.getElementById("reset-button");
+const backgroundMusic = new Audio("./bgmusic.ogg");
+backgroundMusic.loop = true;
+backgroundMusic.volume = 0.15; // düşük ses: 0.0 - 1.0 arası
 
 const animals = [
   { emoji: "🐨", nameTr: "Koala" },
@@ -65,6 +68,14 @@ const colors = [
 
 let soundEnabled = true;
 let particles = [];
+
+function startBackgroundMusic() {
+  if (!soundEnabled) return;
+
+  backgroundMusic.play().catch(() => {
+    // Tarayıcı kullanıcı etkileşimi olmadan sesi engelleyebilir.
+  });
+}
 
 function speak(text, element) {
   if (!soundEnabled || !("speechSynthesis" in window)) return;
@@ -218,6 +229,7 @@ function createBalloon() {
   balloon.addEventListener("click", (event) => {
     event.stopPropagation();
     popBalloon(balloon, color);
+    startBackgroundMusic();
   });
 
   balloon.addEventListener("touchstart", (event) => {
@@ -258,8 +270,10 @@ soundToggle.addEventListener("click", async () => {
 
   if (soundEnabled) {
     speak("Ses açıldı");
+    startBackgroundMusic();
   } else if ("speechSynthesis" in window) {
     window.speechSynthesis.cancel();
+    backgroundMusic.pause();
   }
 });
 
