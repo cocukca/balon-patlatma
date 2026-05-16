@@ -79,6 +79,86 @@ button:active {
     radial-gradient(ellipse at 84% 70%, rgba(255, 255, 255, 0.35) 0 9%, transparent 10%);
 }
 
+
+#start-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 30;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  background: transparent;
+}
+
+#start-screen.is-hidden {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+#preview-balloon-container {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+}
+
+#start-button {
+  position: relative;
+  z-index: 2;
+  width: clamp(190px, 48vw, 310px);
+  height: clamp(190px, 48vw, 310px);
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 32% 26%, rgba(255, 255, 255, 0.95) 0 12%, transparent 13%),
+    radial-gradient(circle at 50% 50%, rgba(255, 255, 255, 0.94) 0 58%, rgba(255, 246, 252, 0.92) 59% 100%);
+  color: #245f8f;
+  font-size: clamp(7.5rem, 27vw, 13.5rem);
+  line-height: 1;
+  font-weight: 800;
+  box-shadow:
+    inset -18px -24px 42px rgba(36, 95, 143, 0.12),
+    inset 14px 16px 28px rgba(255, 255, 255, 0.7),
+    0 22px 46px rgba(36, 95, 143, 0.24);
+  animation: startButtonFloat 3.2s ease-in-out infinite;
+  will-change: transform;
+}
+
+#start-button::after {
+  content: "";
+  position: absolute;
+  bottom: -32px;
+  left: 50%;
+  width: 3px;
+  height: 46px;
+  border-radius: 999px;
+  background: rgba(70, 45, 65, 0.22);
+  transform: translateX(-50%);
+}
+
+#start-button:active {
+  animation-play-state: paused;
+  transform: translate(0, 2px) scale(0.98);
+}
+
+@keyframes startButtonFloat {
+  0%, 100% {
+    transform: translate(0, 0) rotate(-3deg);
+  }
+  25% {
+    transform: translate(14px, -18px) rotate(4deg);
+  }
+  50% {
+    transform: translate(0, -26px) rotate(0deg);
+  }
+  75% {
+    transform: translate(-14px, -16px) rotate(-5deg);
+  }
+}
+
 #game-panel {
   position: absolute;
   top: max(4px, env(safe-area-inset-top));
@@ -118,6 +198,14 @@ button:active {
   backdrop-filter: blur(10px);
   overflow-x: auto;
   white-space: nowrap;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.22s ease;
+}
+
+#score-board.is-visible {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .score-item {
@@ -195,6 +283,14 @@ button:active {
     inset -12px -18px 24px rgba(0, 0, 0, 0.13),
     inset 10px 12px 18px rgba(255, 255, 255, 0.35),
     0 10px 22px rgba(0, 0, 0, 0.12);
+}
+
+.preview-balloon {
+  pointer-events: none;
+}
+
+.preview-balloon::after {
+  height: 52px;
 }
 
 .balloon::before {

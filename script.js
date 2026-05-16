@@ -2,6 +2,9 @@ const canvas = document.getElementById("fireworks-canvas");
 const ctx = canvas.getContext("2d");
 const balloonContainer = document.getElementById("balloon-container");
 const scoreBoard = document.getElementById("score-board");
+const startScreen = document.getElementById("start-screen");
+const startButton = document.getElementById("start-button");
+const previewBalloonContainer = document.getElementById("preview-balloon-container");
 const backgroundMusic = new Audio("./bgmusic.ogg");
 backgroundMusic.loop = true;
 backgroundMusic.volume = 0.15; // düşük ses: 0.0 - 1.0 arası
@@ -47,6 +50,10 @@ const animals = [
 const counts = Object.fromEntries(animals.map((animal) => [animal.emoji, 0]));
 let totalPopped = 0;
 const animalByEmoji = Object.fromEntries(animals.map((animal) => [animal.emoji, animal]));
+const startAnimal = animals[Math.floor(Math.random() * animals.length)];
+startButton.textContent = startAnimal.emoji;
+startButton.title = `${startAnimal.nameTr} ile oyuna başla`;
+startButton.setAttribute("aria-label", `${startAnimal.nameTr} ile oyuna başla`);
 
 const colors = [
   "#ff5252",
@@ -81,6 +88,9 @@ async function startBackgroundMusic() {
 }
 
 let fullscreenRequested = false;
+let gameStarted = false;
+let balloonTimer = null;
+let previewBalloonTimer = null;
 
 async function enterFullscreenOnce() {
   if (fullscreenRequested || document.fullscreenElement) return;
@@ -100,13 +110,31 @@ async function enterFullscreenOnce() {
   }
 }
 
-function handleFirstInteraction() {
-  enterFullscreenOnce();
-  startBackgroundMusic();
+async function startGame() {
+  if (gameStarted) return;
+
+  gameStarted = true;
+  await enterFullscreenOnce();
+  await startBackgroundMusic();
+
+  if (previewBalloonTimer) {
+    window.clearInterval(previewBalloonTimer);
+    previewBalloonTimer = null;
+  }
+
+  previewBalloonContainer.innerHTML = "";
+  startScreen.classList.add("is-hidden");
+  scoreBoard.classList.add("is-visible");
+
+  createBalloon();
+  balloonTimer = window.setInterval(createBalloon, 700);
 }
 
-window.addEventListener("pointerdown", handleFirstInteraction, { once: true });
-window.addEventListener("touchstart", handleFirstInteraction, { once: true, passive: true });
+startButton.addEventListener("click", startGame);
+startButton.addEventListener("touchstart", (event) => {
+  event.preventDefault();
+  startGame();
+}, { passive: false });
 
 function speak(text, element) {
   if (!soundEnabled || !("speechSynthesis" in window)) return;
@@ -250,6 +278,19 @@ function randomItem(items) {
   return items[Math.floor(Math.random() * items.length)];
 }
 
+function createPreviewBalloon() {
+  const balloon = document.createElement("div");
+  const color = randomItem(colors);
+
+  balloon.className = "balloon preview-balloon";
+  balloon.style.backgroundColor = color;
+  balloon.style.left = `${Math.random() * 88 + 2}vw`;
+  balloon.style.animationDuration = `${8 + Math.random() * 7}s`;
+
+  balloon.addEventListener("animationend", () => balloon.remove());
+  previewBalloonContainer.appendChild(balloon);
+}
+
 function createBalloon() {
   const balloon = document.createElement("div");
   const animal = randomItem(animals);
@@ -307,4 +348,7 @@ function popBalloon(balloon, color) {
 
 updateScoreBoard();
 animateFireworks();
-window.setInterval(createBalloon, 700);
+previewBalloonTimer = window.setInterval(createPreviewBalloon, 850);
+for (let i = 0; i < 4; i += 1) {
+  window.setTimeout(createPreviewBalloon, i * 220);
+}
