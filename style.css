@@ -108,8 +108,8 @@ button:active {
   flex-wrap: nowrap;
   justify-content: flex-start;
   align-items: center;
-  gap: 10px;
-  padding: 7px 12px;
+  gap: 8.5px;
+  padding: 6px 10px;
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.78);
   color: #7a2451;
@@ -122,8 +122,8 @@ button:active {
 .score-item {
   display: inline-flex;
   align-items: center;
-  gap: 7px;
-  padding: 4px 10px;
+  gap: 6px;
+  padding: 3px 8px;
   border-radius: 999px;
   background: rgba(255, 90, 165, 0.1);
   color: #8c2259;
@@ -139,12 +139,26 @@ button:active {
 }
 
 .score-emoji {
-  font-size: 2.7rem;
+  font-size: 2.3rem;
   line-height: 1;
 }
 
 .score-count {
-  font-size: 1.2rem;
+  font-size: 1.02rem;
+}
+
+.score-total {
+  background: rgba(120, 200, 255, 0.2);
+  color: #245f8f;
+  cursor: default;
+}
+
+.score-total:active {
+  transform: none;
+}
+
+.score-balloon {
+  font-size: 2.1rem;
 }
 
 #fireworks-canvas {
@@ -230,18 +244,26 @@ button:active {
   #score-board {
     max-width: calc(100vw - 70px);
     justify-content: flex-start;
-    gap: 6px;
+    gap: 5px;
     min-height: 50px;
-    padding: 6px 8px;
+    padding: 5px 7px;
   }
 
   .score-item {
-    gap: 4px;
-    padding: 3px 7px;
+    gap: 3px;
+    padding: 3px 6px;
   }
 
   .score-emoji {
-    font-size: 2.35rem;
+    font-size: 2rem;
+  }
+
+  .score-balloon {
+    font-size: 1.85rem;
+  }
+
+  .score-count {
+    font-size: 0.95rem;
   }
 
   .icon-button {

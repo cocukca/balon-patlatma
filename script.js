@@ -46,6 +46,7 @@ const animals = [
 ];
 
 const counts = Object.fromEntries(animals.map((animal) => [animal.emoji, 0]));
+let totalPopped = 0;
 const animalByEmoji = Object.fromEntries(animals.map((animal) => [animal.emoji, animal]));
 
 const colors = [
@@ -133,8 +134,13 @@ function updateScoreBoard() {
     .sort((a, b) => counts[b.emoji] - counts[a.emoji])
     .slice(0, 3);
 
+  const totalItem = document.createElement("div");
+  totalItem.className = "score-item score-total";
+  totalItem.setAttribute("aria-label", `Toplam patlatılan balon: ${totalPopped}`);
+  totalItem.innerHTML = `<span class="score-emoji score-balloon">🎈</span><span class="score-count">${totalPopped}</span>`;
+  scoreBoard.appendChild(totalItem);
+
   if (topAnimals.length === 0) {
-    scoreBoard.textContent = "Henüz balon patlatılmadı.";
     return;
   }
 
@@ -263,6 +269,7 @@ function popBalloon(balloon, color) {
   const animal = animalByEmoji[balloon.dataset.animal];
   if (animal) {
     counts[animal.emoji] += 1;
+    totalPopped += 1;
     updateScoreBoard();
     speak(animal.nameTr);
   }
