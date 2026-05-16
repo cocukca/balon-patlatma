@@ -99,13 +99,17 @@ async function enterFullscreenOnce() {
 
   try {
     const root = document.documentElement;
+    const requestMethod =
+      root.requestFullscreen ||
+      root.webkitRequestFullscreen ||
+      root.mozRequestFullScreen ||
+      root.msRequestFullscreen;
 
-    if (root.requestFullscreen) {
-      await root.requestFullscreen();
-    } else if (root.webkitRequestFullscreen) {
-      root.webkitRequestFullscreen();
+    if (requestMethod) {
+      await requestMethod.call(root);
     }
-  } catch {
+  } catch (error) {
+    console.warn("Tam ekran isteği başarısız oldu:", error);
     fullscreenRequested = false;
   }
 }
