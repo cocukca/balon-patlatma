@@ -2,7 +2,6 @@ const canvas = document.getElementById("fireworks-canvas");
 const ctx = canvas.getContext("2d");
 const balloonContainer = document.getElementById("balloon-container");
 const scoreBoard = document.getElementById("score-board");
-const soundToggle = document.getElementById("sound-toggle");
 const backgroundMusic = new Audio("./bgmusic.ogg");
 backgroundMusic.loop = true;
 backgroundMusic.volume = 0.15; // düşük ses: 0.0 - 1.0 arası
@@ -81,12 +80,33 @@ async function startBackgroundMusic() {
   }
 }
 
-function unlockAudio() {
+let fullscreenRequested = false;
+
+async function enterFullscreenOnce() {
+  if (fullscreenRequested || document.fullscreenElement) return;
+
+  fullscreenRequested = true;
+
+  try {
+    const root = document.documentElement;
+
+    if (root.requestFullscreen) {
+      await root.requestFullscreen();
+    } else if (root.webkitRequestFullscreen) {
+      root.webkitRequestFullscreen();
+    }
+  } catch {
+    fullscreenRequested = false;
+  }
+}
+
+function handleFirstInteraction() {
+  enterFullscreenOnce();
   startBackgroundMusic();
 }
 
-window.addEventListener("pointerdown", unlockAudio, { once: true });
-window.addEventListener("touchstart", unlockAudio, { once: true, passive: true });
+window.addEventListener("pointerdown", handleFirstInteraction, { once: true });
+window.addEventListener("touchstart", handleFirstInteraction, { once: true, passive: true });
 
 function speak(text, element) {
   if (!soundEnabled || !("speechSynthesis" in window)) return;
@@ -285,28 +305,6 @@ function popBalloon(balloon, color) {
   window.setTimeout(() => balloon.remove(), 130);
 }
 
-function updateSoundButton() {
-  soundToggle.setAttribute("aria-pressed", String(soundEnabled));
-  soundToggle.setAttribute("aria-label", soundEnabled ? "Müziği kapat" : "Müziği aç");
-  soundToggle.setAttribute("title", soundEnabled ? "Müziği kapat" : "Müziği aç");
-  soundToggle.textContent = soundEnabled ? "♫" : "♬";
-  soundToggle.classList.toggle("is-muted", !soundEnabled);
-}
-
-soundToggle.addEventListener("click", async () => {
-  soundEnabled = !soundEnabled;
-  updateSoundButton();
-
-  if (soundEnabled) {
-    speak("Ses açıldı");
-    startBackgroundMusic();
-  } else if ("speechSynthesis" in window) {
-    window.speechSynthesis.cancel();
-    backgroundMusic.pause();
-  }
-});
-
-updateSoundButton();
 updateScoreBoard();
 animateFireworks();
 window.setInterval(createBalloon, 700);
