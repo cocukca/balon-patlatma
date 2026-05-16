@@ -3,7 +3,6 @@ const ctx = canvas.getContext("2d");
 const balloonContainer = document.getElementById("balloon-container");
 const scoreBoard = document.getElementById("score-board");
 const soundToggle = document.getElementById("sound-toggle");
-const resetButton = document.getElementById("reset-button");
 const backgroundMusic = new Audio("./bgmusic.ogg");
 backgroundMusic.loop = true;
 backgroundMusic.volume = 0.15; // düşük ses: 0.0 - 1.0 arası
@@ -69,13 +68,24 @@ const colors = [
 let soundEnabled = true;
 let particles = [];
 
-function startBackgroundMusic() {
+async function startBackgroundMusic() {
   if (!soundEnabled) return;
 
-  backgroundMusic.play().catch(() => {
-    // Tarayıcı kullanıcı etkileşimi olmadan sesi engelleyebilir.
-  });
+  try {
+    if (backgroundMusic.paused) {
+      await backgroundMusic.play();
+    }
+  } catch {
+    // Mobil tarayıcılar kullanıcı etkileşimi yoksa sesi engelleyebilir.
+  }
 }
+
+function unlockAudio() {
+  startBackgroundMusic();
+}
+
+window.addEventListener("pointerdown", unlockAudio, { once: true });
+window.addEventListener("touchstart", unlockAudio, { once: true, passive: true });
 
 function speak(text, element) {
   if (!soundEnabled || !("speechSynthesis" in window)) return;
@@ -117,19 +127,23 @@ function playPopSound() {
 
 function updateScoreBoard() {
   scoreBoard.innerHTML = "";
-  const visibleAnimals = animals.filter((animal) => counts[animal.emoji] > 0);
 
-  if (visibleAnimals.length === 0) {
+  const topAnimals = animals
+    .filter((animal) => counts[animal.emoji] > 0)
+    .sort((a, b) => counts[b.emoji] - counts[a.emoji])
+    .slice(0, 5);
+
+  if (topAnimals.length === 0) {
     scoreBoard.textContent = "Henüz balon patlatılmadı.";
     return;
   }
 
-  visibleAnimals.forEach((animal) => {
+  topAnimals.forEach((animal) => {
     const item = document.createElement("button");
     item.className = "score-item";
     item.type = "button";
     item.title = `${animal.nameTr} seslendir`;
-    item.innerHTML = `<span class="score-emoji">${animal.emoji}</span><span>${counts[animal.emoji]}</span>`;
+    item.innerHTML = `<span class="score-emoji">${animal.emoji}</span><span class="score-count">${counts[animal.emoji]}</span>`;
     item.addEventListener("click", () => speak(animal.nameTr, item));
     scoreBoard.appendChild(item);
   });
@@ -194,7 +208,7 @@ function createFirework() {
 
 function animateFireworks() {
   requestAnimationFrame(animateFireworks);
-  ctx.fillStyle = "rgba(253, 239, 249, 0.16)";
+  ctx.fillStyle = "rgba(120, 200, 255, 0.08)";
   ctx.fillRect(0, 0, window.innerWidth, window.innerHeight);
 
   particles = particles.filter((particle) => particle.alpha > 0);
@@ -234,6 +248,7 @@ function createBalloon() {
 
   balloon.addEventListener("touchstart", (event) => {
     event.preventDefault();
+    startBackgroundMusic();
     popBalloon(balloon, color);
   }, { passive: false });
 
@@ -263,10 +278,17 @@ function popBalloon(balloon, color) {
   window.setTimeout(() => balloon.remove(), 130);
 }
 
+function updateSoundButton() {
+  soundToggle.setAttribute("aria-pressed", String(soundEnabled));
+  soundToggle.setAttribute("aria-label", soundEnabled ? "Müziği kapat" : "Müziği aç");
+  soundToggle.setAttribute("title", soundEnabled ? "Müziği kapat" : "Müziği aç");
+  soundToggle.textContent = soundEnabled ? "♫" : "♬";
+  soundToggle.classList.toggle("is-muted", !soundEnabled);
+}
+
 soundToggle.addEventListener("click", async () => {
   soundEnabled = !soundEnabled;
-  soundToggle.setAttribute("aria-pressed", String(soundEnabled));
-  soundToggle.textContent = soundEnabled ? "Ses: Açık" : "Ses: Kapalı";
+  updateSoundButton();
 
   if (soundEnabled) {
     speak("Ses açıldı");
@@ -277,15 +299,7 @@ soundToggle.addEventListener("click", async () => {
   }
 });
 
-resetButton.addEventListener("click", () => {
-  animals.forEach((animal) => {
-    counts[animal.emoji] = 0;
-  });
-  balloonContainer.innerHTML = "";
-  particles = [];
-  updateScoreBoard();
-});
-
+updateSoundButton();
 updateScoreBoard();
 animateFireworks();
 window.setInterval(createBalloon, 700);
