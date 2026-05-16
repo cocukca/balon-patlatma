@@ -131,7 +131,7 @@ function updateScoreBoard() {
   const topAnimals = animals
     .filter((animal) => counts[animal.emoji] > 0)
     .sort((a, b) => counts[b.emoji] - counts[a.emoji])
-    .slice(0, 5);
+    .slice(0, 3);
 
   if (topAnimals.length === 0) {
     scoreBoard.textContent = "Henüz balon patlatılmadı.";
